@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mb-5">
+    <div class="row mb-5">
+        <div class="col-2">
+            <img src="{{ student.profile.image.url }}" class="rounded-circle mr-3" height="150px" width="150" alt="avatar">
+        </div>
+        <div class="col-3 mt-3">
+            <h2>{{ student.profile.first_name }} {{ student.profile.last_name }}</h2>
+            <p><b>Email:</b> {{ student.profile.user.email }}</p>
+            <p><b>Current Class:</b> {{ student.current_class }}</p>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-hover">
+            <thead class="info-color">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Subject</th>
+                <th scope="col">Mid-Term Marks</th>
+                <th scope="col">Final-Term Marks</th>              
+                <th scope="col">Final-Grade</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for marksheet in marksheets %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <th scope="row">{{ marksheet.get_subject_display }}</th>
+                    <th scope="row">{{ marksheet.mid_term_marks }}</th>
+                    <th scope="row">{{ marksheet.final_term_marks }}</th>
+                    <th scope="row">{{ marksheet.final_grade }}</th>
+                    <th scope="row"><a href="{% url 'core:update-marksheet' marksheet.id %}" class="btn btn-danger btn-sm">Update</a></th>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

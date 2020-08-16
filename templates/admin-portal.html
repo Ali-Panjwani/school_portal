@@ -1,0 +1,233 @@
+{% extends 'adminbase.html' %}
+
+{% block content %}
+<!--Main layout-->
+<main class="pt-5 mx-lg-5">
+    <div class="container-fluid mt-5">
+
+        {% if messages %}
+          {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+          {% endfor %}
+        {% endif %}
+
+        <!-- Heading -->
+        <div class="card mb-4 wow fadeIn">
+
+            <!--Card content-->
+            <div class="card-body d-sm-flex justify-content-between">
+
+                <h4 class="mb-2 mb-sm-0 pt-1">
+                    <span>Admin Dashboard</span>
+                </h4>
+
+                <form class="d-flex justify-content-center">
+                    <!-- Default input -->
+                    <input type="search" placeholder="Type your query" aria-label="Search" class="form-control">
+                    <button class="btn btn-primary btn-sm my-0 p" type="submit">
+                    <i class="fas fa-search"></i>
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+        <!-- Heading -->
+
+
+    </div>
+
+    <!--Grid row-->
+    <div class="row">
+
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+
+            <!-- Card -->
+            <div class="card gradient-card">
+
+                <div class="card-image waves-effect">
+
+                    <!-- Content -->
+                    <a href="#!">
+                        <div class="text-white d-flex h-100 mask blue-gradient-rgba">
+                        <div class="first-content align-self-center p-3">
+                            <h3 class="card-title">Teachers</h3>
+                            <p class="lead mb-0">Click to see Teachers' details</p>
+                        </div>
+                        <div class="second-content align-self-center mx-auto text-center">
+                            <!-- <i class="far fa-money-bill-alt fa-3x"></i> -->
+                            <i class="fas fa-chalkboard-teacher fa-3x"></i>
+                        </div>
+                        </div>
+                    </a>
+
+                </div>
+
+            </div>
+            <!-- Card -->
+
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+
+            <!-- Card -->
+            <div class="card gradient-card">
+
+                <div class="card-image waves-effect">
+
+                    <!-- Content -->
+                    <a href="{% url 'core:students-admin' %}">
+                        <div class="text-white d-flex h-100 mask peach-gradient-rgba">
+                        <div class="first-content align-self-center p-3">
+                            <h3 class="card-title">Students</h3>
+                            <p class="lead mb-0">Click to see Students' details</p>
+                        </div>
+                        <div class="second-content  align-self-center mx-auto text-center">
+                            <!-- <i class="fas fa-chart-line fa-3x"></i> -->
+                            <i class="fas fa-user-graduate fa-3x"></i>
+                        </div>
+                        </div>
+                    </a>
+
+                </div>
+
+            </div>
+            <!-- Card -->
+
+        </div>
+        <!--Grid column-->
+
+
+    </div>
+    <!--Grid row-->
+
+    <!--Grid row-->
+    <div class="row wow fadeIn">
+
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+
+            <!--Card-->
+            <div class="card">
+
+            <!--Card content-->
+            <div class="card-body">
+
+                <!-- Table  -->
+                <table class="table table-hover">
+                <!-- Table head -->
+                <thead class="blue-grey lighten-4">
+                    <tr>
+                    <th>#</th>
+                    <th>Lorem</th>
+                    <th>Ipsum</th>
+                    <th>Dolor</th>
+                    </tr>
+                </thead>
+                <!-- Table head -->
+
+                <!-- Table body -->
+                <tbody>
+                    <tr>
+                    <th scope="row">1</th>
+                    <td>Cell 1</td>
+                    <td>Cell 2</td>
+                    <td>Cell 3</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">2</th>
+                    <td>Cell 4</td>
+                    <td>Cell 5</td>
+                    <td>Cell 6</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">3</th>
+                    <td>Cell 7</td>
+                    <td>Cell 8</td>
+                    <td>Cell 9</td>
+                    </tr>
+                </tbody>
+                <!-- Table body -->
+                </table>
+                <!-- Table  -->
+
+            </div>
+
+            </div>
+            <!--/.Card-->
+
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+
+            <!--Card-->
+            <div class="card">
+
+            <!--Card content-->
+            <div class="card-body">
+
+                <!-- Table  -->
+                <table class="table table-hover">
+                <!-- Table head -->
+                <thead class="blue lighten-4">
+                    <tr>
+                    <th>#</th>
+                    <th>Lorem</th>
+                    <th>Ipsum</th>
+                    <th>Dolor</th>
+                    </tr>
+                </thead>
+                <!-- Table head -->
+
+                <!-- Table body -->
+                <tbody>
+                    <tr>
+                    <th scope="row">1</th>
+                    <td>Cell 1</td>
+                    <td>Cell 2</td>
+                    <td>Cell 3</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">2</th>
+                    <td>Cell 4</td>
+                    <td>Cell 5</td>
+                    <td>Cell 6</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">3</th>
+                    <td>Cell 7</td>
+                    <td>Cell 8</td>
+                    <td>Cell 9</td>
+                    </tr>
+                </tbody>
+                <!-- Table body -->
+                </table>
+                <!-- Table  -->
+
+            </div>
+
+            </div>
+            <!--/.Card-->
+
+        </div>
+        <!--Grid column-->
+
+    </div>
+    <!--Grid row-->
+
+    </div>
+</main>
+<!--Main layout-->
+
+{% endblock content %}

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Welcome {{ user.profile.first_name }}  {{ user.profile.last_name }}</h1>
+    <br>
+    <div class="row">
+        <div class="col">
+            <h3>Here are your marksheets</h3>
+            <div class="list-group mb-5">
+                {% for class in class_list %}
+                    <a href="{% url 'core:student-marksheet' user.username class %}" class="list-group-item list-group-item-action">Class {{ class }} Marksheet</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

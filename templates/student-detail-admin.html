@@ -1,0 +1,79 @@
+{% extends 'adminbase.html' %}
+
+{% block content %}
+<!--Main layout-->
+<main class="pt-5 mx-lg-5">
+    <div class="container-fluid mt-5">
+        
+
+        <!-- Heading -->
+        <div class="card mb-4 wow fadeIn">
+
+            <!--Card content-->
+            <div class="card-body d-sm-flex justify-content-between">
+
+                <h4 class="mb-2 mb-sm-0 pt-1">
+                    <span>Student Info</span>
+                </h4>
+
+                <form class="d-flex justify-content-center">
+                    <!-- Default input -->
+                    <input type="search" placeholder="Type your query" aria-label="Search" class="form-control">
+                    <button class="btn btn-primary btn-sm my-0 p" type="submit">
+                    <i class="fas fa-search"></i>
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+        <!-- Heading -->
+
+        {% if messages %}
+          {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+          {% endfor %}
+        {% endif %}
+
+        <div class="row mb-5">
+            <div class="col-2">
+                <img src="{{ student.profile.image.url }}" class="rounded-circle mr-3" height="150px" width="150" alt="avatar">
+            </div>
+            <div class="col-3 mt-3">
+                <h2>{{ student.profile.first_name }} {{ student.profile.last_name }}</h2>
+                <p><b>Username:</b> {{ student.profile.user.username }}</p>
+                <p><b>Email:</b> {{ student.profile.user.email }}</p>
+                <p><b>Birthdate:</b> {{ student.profile.birthdate }}</p>
+                <p><b>Class Joined:</b> {{ student.class_joined }}</p>
+                <p><b>Date Joined:</b> {{ student.profile.date_joined }}</p>
+                <p><b>Current Class:</b> {{ student.current_class }}</p>
+                <p><b>Current Teachers:</b></p>
+                {% for teacher in teachers %}
+                <ul class="mt-0 ml-5 pl-5">
+                    <a href=""><li>{{ teacher.profile.first_name }} {{ teacher.profile.last_name }}</li></a>
+                </ul>
+                {% endfor %}
+                </p>
+            </div>
+            <div class="col-6">
+                <h3 class="mt-5">Student's Marksheets</h3>
+                <div class="list-group mb-5">
+                    {% for class in class_list %}
+                        <a href="{% url 'core:student-marksheet' student.profile.user.username class %}" class="list-group-item list-group-item-action">Class {{ class }} Marksheet</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+</main>
+<!--Main layout-->
+
+{% endblock content %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="margin-top: 100px;" class="container mb-5">
+    {% if marksheets %}
+        <div class="row mb-3">
+            <div class="col-10"><h1>{{ marksheets|first }} for class {{ class }}</h1></div>
+            <div class="col"><a href="{% url 'core:marksheet-pdf' student.profile.user.username class %}" class="btn btn-primary btn-rounded" target="_blank">Pdf</a></div>           
+        </div>
+        <div class="row">
+            <div class="table-responsive text-nowrap">
+                <table class="table table-hover">
+                    <thead class="light-blue lighten-2">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Subject</th>
+                            <th scope="col">Marked By</th>
+                            <th scope="col">mid_term_marks</th>
+                            <th scope="col">final_term_marks</th>
+                            <th scope="col">final_grade</th>                
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for marksheet in marksheets %}
+                            <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>{{ marksheet.get_subject_display }}</td>
+                                <td>{{ marksheet.teacher.profile.first_name }} {{ marksheet.teacher.profile.last_name }}</td>
+                                <td>{{ marksheet.mid_term_marks }}</td>
+                                <td>{{ marksheet.final_term_marks }}</td>
+                                <td>{{ marksheet.final_grade }}</td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <th scope="row"></th>
+                            <td><b>Overall</b></td>
+                            <td></td>
+                            <td>{{ mid_term_marks }}</td>
+                            <td>{{ final_term_marks }}</td>
+                            <td>{{ final_grade }} ({{ percentage }}%)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <h1>There Was No Marksheet Found For This Class</h1>
+    {% endif %}
+</div>
+{% endblock content %}

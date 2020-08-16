@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mb-5">
+    <div class="row">
+        <div class="col-2">
+            <img src="{{ user.profile.image.url }}" class="rounded-circle mr-3" height="150px" width="150" alt="avatar">
+        </div>
+        <div class="col-3">
+            <h2>{{ user.profile.first_name }} {{ user.profile.last_name }}</h2>
+            <p><b>Username:</b> {{ user.username }}</p>
+            <p><b>Email:</b> {{ user.email }}</p>
+            <p><b>Brithdate:</b> {{ user.profile.birthdate }}</p>
+            <p><b>Date Joined:</b> {{ user.profile.date_joined }}</p>
+            {% if std %}
+                <p><b>Class Joined:</b> {{ std.class_joined }}</p>
+                <p><b>Current Class:</b> {{ std.current_class }}</p>
+            {% elif teacher %}
+                <p><b>Subject:</b> {{ teacher.get_subject_display }}</p>
+            {% endif %}
+        </div>
+        <div class="col">
+            <a class="btn btn-primary" href="{% url 'account_email' %}">Manage Email</a><br>
+            <a class="btn btn-primary" href="{% url 'account_change_password' %}">Change Password</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Welcome {{ user.profile.first_name }}  {{ user.profile.last_name }}</h1>
+    <br>
+    <div class="row">
+        <div class="col">
+            <h3>Your Students</h3>
+            <table class="table table-hover">
+                <thead class="info-color">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Current Class</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for student in students %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>
+                            <img width="40px" src="{{ student.profile.image.url }}" class="rounded-circle z-depth-0 mr-3" alt="avatar image">
+                            <b>{{ student.profile.first_name }} {{ student.profile.last_name }}</b>
+                        </td>
+                        <td>{{ student.current_class }}</td>
+                        <td><a href="{% url 'core:student-info' student.profile.user.username %}" class="btn btn-primary btn-sm">View Details</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}

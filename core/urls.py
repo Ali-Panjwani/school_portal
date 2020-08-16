@@ -10,7 +10,9 @@ from .views import (
     MarksheetUpdateView,
     admin_portal,
     students_admin,
-    student_detail_admin
+    TeachersAdminView,
+    student_detail_admin,
+    TeacherDetailAdminView
 )
 
 app_name = 'core'
@@ -26,5 +28,7 @@ urlpatterns = [
     path('teacher-portal/marksheet/<int:pk>/update/', MarksheetUpdateView.as_view(), name='update-marksheet'),
     path('admin-portal/', admin_portal, name='admin-portal'),
     path('admin-portal/students/', students_admin, name='students-admin'),
-    path('admin-portal/<str:username>/', student_detail_admin, name='student-detail-admin')
+    path('admin-portal/student/<str:username>/', student_detail_admin, name='student-detail-admin'),
+    path('admin-portal/teachers/', TeachersAdminView.as_view(), name='teachers-admin'),
+    path('admin-portal/teacher/<int:pk>/', TeacherDetailAdminView.as_view(), name='teacher-detail-admin')
 ]

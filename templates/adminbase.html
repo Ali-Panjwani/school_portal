@@ -49,17 +49,17 @@ position:absolute;
         </a>
   
         <div class="list-group list-group-flush">
-            <a href="{% url 'core:admin-portal' %}" class="list-group-item active waves-effect">
+            <a href="{% url 'core:admin-portal' %}" class="list-group-item {% block active %}{% endblock active %} list-group-item-action waves-effect">
                 <i class="fas fa-chart-pie mr-3"></i>Dashboard
             </a>
-            <a href="{% url 'core:students-admin' %}" class="list-group-item list-group-item-action waves-effect">
+            <a href="{% url 'core:students-admin' %}" class="list-group-item {% block active2 %}{% endblock active2 %} list-group-item-action waves-effect">
                 <i class="fas fa-user mr-3"></i>Students</a>
-            <a href="#" class="list-group-item list-group-item-action waves-effect">
+            <a href="{% url 'core:teachers-admin' %}" class="list-group-item {% block active3 %}{% endblock active3 %} list-group-item-action waves-effect">
                 <i class="fas fa-chalkboard-teacher mr-3"></i>Teachers</a>
-            <a href="#" class="list-group-item list-group-item-action waves-effect">
+            <a href="#" class="list-group-item {% block active4 %}{% endblock active4 %} list-group-item-action waves-effect">
+              <i class="fas fa-user-plus mr-3"></i></i>Create User</a>
+            <a href="#" class="list-group-item {% block active5 %}{% endblock active5 %} list-group-item-action waves-effect">
                 <i class="far fa-envelope mr-3"></i>Messages</a>
-            <a href="#" class="list-group-item list-group-item-action waves-effect">
-                <i class="fas fa-user-plus mr-3"></i></i>Create User</a>
         </div>
   
     </div>
@@ -71,7 +71,7 @@ position:absolute;
       <div class="container-fluid">
 
         <!-- Brand -->
-        <a class="navbar-brand waves-effect" href="/" target="_blank">
+        <a class="navbar-brand waves-effect" href="/">
           <strong class="blue-text">School Portal</strong>
         </a>
 

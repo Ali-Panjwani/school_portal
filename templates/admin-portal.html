@@ -1,5 +1,7 @@
 {% extends 'adminbase.html' %}
 
+{% block active %}active{% endblock active %}
+
 {% block content %}
 <!--Main layout-->
 <main class="pt-5 mx-lg-5">
@@ -55,7 +57,7 @@
                 <div class="card-image waves-effect">
 
                     <!-- Content -->
-                    <a href="#!">
+                    <a href="{% url 'core:teachers-admin' %}">
                         <div class="text-white d-flex h-100 mask blue-gradient-rgba">
                         <div class="first-content align-self-center p-3">
                             <h3 class="card-title">Teachers</h3>

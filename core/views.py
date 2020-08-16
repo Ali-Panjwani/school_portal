@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 
@@ -200,3 +200,20 @@ def student_detail_admin(request, username):
             'teachers': teachers
         }
         return render(request, 'student-detail-admin.html', context)
+
+
+class TeachersAdminView(ListView):
+    context_object_name = 'teachers'
+    model = Teacher
+    template_name = 'teachers-admin.html'
+
+class TeacherDetailAdminView(DetailView):
+    model = Teacher
+    template_name = 'teacher-detail-admin.html'
+    context_object_name = 'teacher'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        teacher = Teacher.objects.get(pk=self.kwargs['pk'])
+        context['students'] = teacher.student_set.all()
+        return context

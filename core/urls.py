@@ -12,7 +12,10 @@ from .views import (
     students_admin,
     TeachersAdminView,
     student_detail_admin,
-    TeacherDetailAdminView
+    TeacherDetailAdminView,
+    create_user,
+    create_profile,
+    create_student
 )
 
 app_name = 'core'
@@ -30,5 +33,8 @@ urlpatterns = [
     path('admin-portal/students/', students_admin, name='students-admin'),
     path('admin-portal/student/<str:username>/', student_detail_admin, name='student-detail-admin'),
     path('admin-portal/teachers/', TeachersAdminView.as_view(), name='teachers-admin'),
-    path('admin-portal/teacher/<int:pk>/', TeacherDetailAdminView.as_view(), name='teacher-detail-admin')
+    path('admin-portal/teacher/<int:pk>/', TeacherDetailAdminView.as_view(), name='teacher-detail-admin'),
+    path('admin-portal/create-user/', create_user, name='create-user'),
+    path('admin-portal/create-profile/<str:username>/', create_profile, name='create-profile'),
+    path('admin-portal/add-student-info/<str:username>/', create_student, name='create-student'),
 ]

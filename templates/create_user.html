@@ -1,0 +1,59 @@
+{% extends 'adminbase.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block active4 %}active{% endblock active4 %}
+
+{% block content %}
+
+<!--Main layout-->
+<main class="pt-5 mx-lg-5">
+    <div class="container-fluid mt-5">
+
+        <!-- Heading -->
+        <div class="card mb-4 wow fadeIn">
+
+            <!--Card content-->
+            <div class="card-body justify-content-between">
+                <h2>{{ title }}</h2>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    {{ form2|crispy }}
+                    <input class="btn btn-primary" type="submit">
+                </form>
+            </div>
+
+        </div>
+        <!-- Heading -->
+
+        {% if messages %}
+          {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+          {% endfor %}
+        {% endif %}
+
+        
+
+    </div>
+</main>
+<!--Main layout-->
+
+{% endblock content %}
+
+{% block extra_body %}
+<script>
+// Basic example
+$(document).ready(function () {
+  $('#dtBasicExample').DataTable({
+    "pagingType": "full_numbers" // "simple" option for 'Previous' and 'Next' buttons only
+  });
+  $('.dataTables_length').addClass('bs-select');
+});
+</script>
+{% endblock extra_body %}

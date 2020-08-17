@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from .models import Marksheet, Student, Teacher
+from django.http import HttpResponse, Http404
+from .models import Marksheet, Student, Teacher, Profile
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.views.generic import UpdateView, ListView, DetailView
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from .forms import CreateUserForm, CreateProfileForm, CreateTeacherForm, CreateStudentForm, StatusForm
 
 import io
 from django.http import FileResponse
@@ -217,3 +218,87 @@ class TeacherDetailAdminView(DetailView):
         teacher = Teacher.objects.get(pk=self.kwargs['pk'])
         context['students'] = teacher.student_set.all()
         return context
+
+def create_user(request):
+    if request.method == 'POST':
+        u_form = CreateUserForm(request.POST)
+        s_form = StatusForm(request.POST)
+        if u_form.is_valid() and s_form.is_valid():
+            u_form.save()
+            profile = Profile.objects.get(user__username = u_form.cleaned_data['username'])
+            if s_form.cleaned_data['status'] == 'S':
+                profile.status = 'S'
+                profile.save()
+                s = Student(profile=profile)
+                s.save()
+            elif s_form.cleaned_data['status'] == 'T':
+                profile.status = 'T'
+                profile.save()
+                t = Teacher(profile=profile)
+                t.save()
+            elif s_form.cleaned_data['status'] == 'A':
+                profile.status = 'A'
+                profile.save()
+
+            return redirect('core:create-profile', username=u_form.cleaned_data['username'])
+    elif request.method == 'GET':
+        u_form = CreateUserForm()
+        s_form = StatusForm()
+
+    context = {
+        'form': u_form,
+        'form2': s_form,
+        'title': 'Create New User'
+    }
+    return render(request, 'create_user.html', context)
+
+def create_profile(request, username):
+    user = User.objects.get(username=username)
+    if request.method == 'POST':
+        p_form = CreateProfileForm(request.POST, instance=user.profile)
+        if p_form.is_valid():
+            p_form.save()
+            if user.profile.status == 'A':
+                user.is_staff = True
+                user.save()
+                messages.success(request, 'User Created Successfully')
+                return redirect('core:home', permanent=True)
+            else:
+                return redirect('core:create-student', username=username, permanent=True)
+    elif request.method == 'GET':
+        p_form = CreateProfileForm(instance=user.profile)
+
+    context = {
+        'form': p_form,
+        'title': f"Create {user.username}'s profile"
+    }
+    return render(request, 'create_user.html', context)
+
+def create_student(request, username):
+    user = User.objects.get(username=username)
+    if request.method == 'POST':
+        if user.profile.status == 'S':
+            form = CreateStudentForm(request.POST, instance=user.profile.student)
+        elif user.profile.status == 'T':
+            form = CreateTeacherForm(request.POST, instance=user.profile.teacher)
+        else:
+            raise Http404
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'User Created Successfully')
+            return redirect('core:home', permanent=True)
+
+    elif request.method == 'GET':
+        if user.profile.status == 'S':
+            form = CreateStudentForm(request.POST)
+        elif user.profile.status == 'T':
+            form = CreateTeacherForm(request.POST)
+        else:
+            raise Http404
+
+    context = {
+        'form': form,
+        'title': f"Enter More Info About {user.profile.first_name} {user.profile.last_name}"
+    }
+    return render(request, 'create_user.html', context)

@@ -45,7 +45,7 @@ position:absolute;
     <div class="sidebar-fixed position-fixed">
 
         <a class="logo-wrapper waves-effect">
-          <img src="{% static 'img/download.jpg' %}" class="img-fluid" alt="">
+          <img src="{% static 'img/download.jpg' %}" width="150px" height="150px" alt="">
         </a>
   
         <div class="list-group list-group-flush">
@@ -56,7 +56,7 @@ position:absolute;
                 <i class="fas fa-user mr-3"></i>Students</a>
             <a href="{% url 'core:teachers-admin' %}" class="list-group-item {% block active3 %}{% endblock active3 %} list-group-item-action waves-effect">
                 <i class="fas fa-chalkboard-teacher mr-3"></i>Teachers</a>
-            <a href="#" class="list-group-item {% block active4 %}{% endblock active4 %} list-group-item-action waves-effect">
+            <a href="{% url 'core:create-user' %}" class="list-group-item {% block active4 %}{% endblock active4 %} list-group-item-action waves-effect">
               <i class="fas fa-user-plus mr-3"></i></i>Create User</a>
             <a href="#" class="list-group-item {% block active5 %}{% endblock active5 %} list-group-item-action waves-effect">
                 <i class="far fa-envelope mr-3"></i>Messages</a>

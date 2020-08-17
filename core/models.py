@@ -4,17 +4,17 @@ from django.urls import reverse
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100, blank=True, null=True)
+    last_name = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
-    birthdate = models.DateField()
-    date_joined = models.DateField()
+    birthdate = models.DateField(blank=True, null=True)
+    date_joined = models.DateField(blank=True, null=True)
     STATUS_CHOICES = [
         ('S', 'Student'),
         ('T', 'Teacher'),
         ('A', 'Admin')
     ]
-    status = models.CharField(max_length=1, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
@@ -25,7 +25,7 @@ class Profile(models.Model):
 class Student(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
     class_joined = models.IntegerField(blank=True, null=True)
-    current_class = models.IntegerField()
+    current_class = models.IntegerField(blank=True, null=True)
     class_passed = models.BooleanField(default=False)
     current_teachers = models.ManyToManyField(to='Teacher')
 
@@ -44,8 +44,6 @@ class Teacher(models.Model):
     def __str__(self):
         return f'{self.profile.first_name} {self.profile.last_name}'
 
-class Admin(models.Model):
-    pass
 
 class Marksheet(models.Model):
     pupil = models.ForeignKey(Student, on_delete=models.CASCADE)

@@ -18,12 +18,12 @@
                     <span>List Of teachers</span>
                 </h4>
 
-                <!-- <form class="d-flex justify-content-center">
-                    <input type="search" placeholder="Type your query" aria-label="Search" class="form-control">
+                <form id='search-form' class="d-flex justify-content-center">
+                    <input type="text" placeholder="Type your query" aria-label="Search" class="form-control">
                     <button class="btn btn-primary btn-sm my-0 p" type="submit">
                     <i class="fas fa-search"></i>
                     </button>
-                </form> -->
+                </form>
 
             </div>
 
@@ -95,7 +95,12 @@
 {% block extra_body %}
 <script>
 // Basic example
+
 $(document).ready(function () {
+  $('#search-form').submit(function(e){
+    e.preventDefault;
+    console.log('nksdnksd');
+  })
   $('#dtBasicExample').DataTable({
     "pagingType": "full_numbers" // "simple" option for 'Previous' and 'Next' buttons only
   });

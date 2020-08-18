@@ -9,6 +9,7 @@ from django.views.generic import UpdateView, ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from .forms import CreateUserForm, CreateProfileForm, CreateTeacherForm, CreateStudentForm, StatusForm
+from django.db.models import Q
 
 import io
 from django.http import FileResponse
@@ -181,6 +182,11 @@ def admin_portal(request):
 def students_admin(request):
     if request.user.profile.status == 'A':
         students = Student.objects.all().order_by('current_class')
+        if request.method == 'POST':
+            search = request.POST.get('search', None)
+            # print(search)
+            if search != '' and search is not None:
+                students = students.filter(Q(profile__first_name__icontains=search) | Q(profile__last_name__icontains=search)).order_by('current_class')
         context = {
             'students': students
         }

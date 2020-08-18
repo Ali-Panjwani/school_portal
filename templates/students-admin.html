@@ -19,12 +19,13 @@
                     <span>List Of Students</span>
                 </h4>
 
-                <!-- <form class="d-flex justify-content-center">
-                    <input type="search" placeholder="Type your query" aria-label="Search" class="form-control">
-                    <button class="btn btn-primary btn-sm my-0 p" type="submit">
+                <form class="d-flex justify-content-center" action="" method="POST" id="search-form">
+                    {% csrf_token %}
+                    <input type="text" id="search" name='search' placeholder="Type your query" aria-label="Search" class="form-control">
+                    <button class="btn btn-primary btn-sm my-0 p" id="abc">
                     <i class="fas fa-search"></i>
                     </button>
-                </form> -->
+                </form>
 
             </div>
 
@@ -58,7 +59,7 @@
                         </th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="student-table">
                         {% for student in students %}
                         <tr>
                             <th scope="row">{{ forloop.counter }}</th>
@@ -93,14 +94,52 @@
 
 {% endblock content %}
 
+
+
+
 {% block extra_body %}
 <script>
 // Basic example
 $(document).ready(function () {
+
+  
   $('#dtBasicExample').DataTable({
     "pagingType": "full_numbers" // "simple" option for 'Previous' and 'Next' buttons only
   });
   $('.dataTables_length').addClass('bs-select');
+
+  
+  // $('#search-form').submit(function(e){
+  //     e.preventDefault();
+
+      function x(){
+        const search = $('#search').val();
+      
+
+        const url = $('#search-form').attr('action')
+
+        $.ajax({
+          type: 'POST',
+          url: 'http://127.0.0.1:8000/admin-portal/students/',
+          data: {
+            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+            'search': search,
+          },
+          success: function(html) {
+            console.log(html)
+            $('#student-table', html).replaceAll('#student-table')
+          },
+          error: function (error) {
+            console.log('error', error)
+          }
+        })
+
+      }
+
+      setInterval(x, 1000)
+      
+
+    // })
 });
 </script>
 {% endblock extra_body %}

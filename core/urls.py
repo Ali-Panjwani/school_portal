@@ -15,7 +15,10 @@ from .views import (
     TeacherDetailAdminView,
     create_user,
     create_profile,
-    create_student
+    create_student,
+    classes_view,
+    class_detail_view,
+    edit_class_teachers
 )
 
 app_name = 'core'
@@ -37,4 +40,7 @@ urlpatterns = [
     path('admin-portal/create-user/', create_user, name='create-user'),
     path('admin-portal/create-profile/<str:username>/', create_profile, name='create-profile'),
     path('admin-portal/add-student-info/<str:username>/', create_student, name='create-student'),
+    path('admin-portal/classes/', classes_view, name='classes'),
+    path('admin-portal/classes/<int:grade>/', class_detail_view, name='class-detail'),
+    path('admin-portal/classes/<int:grade>/edit/', edit_class_teachers, name='edit-class-teachers'),
 ]

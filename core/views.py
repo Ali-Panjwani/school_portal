@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
-from .models import Marksheet, Student, Teacher, Profile
+from .models import Marksheet, Student, Teacher, Profile, Class
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
@@ -308,3 +308,69 @@ def create_student(request, username):
         'title': f"Enter More Info About {user.profile.first_name} {user.profile.last_name}"
     }
     return render(request, 'create_user.html', context)
+
+def classes_view(request):
+    if request.user.profile.status == 'A':
+        classes = Class.objects.all()
+        context = {
+            'classes': classes
+        }
+        return render(request, 'classes.html', context)
+    else:
+        raise PermissionDenied
+
+def class_detail_view(request, grade):
+    if request.user.profile.status == 'A':
+        class_grade = Class.objects.get(grade=grade)
+        teachers = class_grade.teacher_set.all()
+        context = {
+            'teachers': teachers,
+            'grade': grade
+        }
+        return render(request, 'class-detail.html', context)
+    else:
+        raise PermissionDenied
+
+def is_query_valid(query):
+    return query != '' and query is not None
+
+
+def edit_class_teachers(request, grade):
+    if request.user.profile.status == 'A':
+        class_grade = Class.objects.get(grade=grade)
+        class_teachers = class_grade.teacher_set.all()
+        teachers = Teacher.objects.all()
+        if request.method == 'GET':
+            first = request.GET.get('first')
+            last = request.GET.get('last')
+            subject = request.GET.get('subject')
+            if is_query_valid(first) and is_query_valid(last):
+                teachers = teachers.filter(profile__first_name__icontains=first, profile__last_name__icontains=last)
+            elif is_query_valid(first):
+                print(first)
+                teachers = teachers.filter(profile__first_name__icontains=first)
+            elif is_query_valid(last):
+                print(last)
+                teachers = teachers.filter(profile__last_name__icontains=last)
+
+            if is_query_valid(subject):
+                teachers = teachers.filter(subject__icontains=subject[0])
+            context = {
+                'class_teachers': class_teachers,
+                'teachers': teachers,
+                'grade': grade
+            }
+            return render(request, 'edit-class-teachers.html', context)
+        else:
+            for t in teachers:
+                check = request.POST.get(str(t.pk))
+                if check == 'on':
+                    t.classes.add(class_grade)
+                    t.save()
+                else:
+                    if t in class_teachers:
+                        t.classes.remove(class_grade)
+            messages.success(request, f'Teachers for class {grade} edited successfully')
+            return redirect('core:class-detail', grade=grade)
+    else:
+        raise PermissionDenied

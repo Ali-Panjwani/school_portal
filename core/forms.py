@@ -25,7 +25,7 @@ class CreateProfileForm(forms.ModelForm):
 class CreateStudentForm(forms.ModelForm):
     class Meta:
         model = Student
-        fields = ['class_joined', 'current_class', 'class_passed', 'current_teachers']
+        fields = ['class_joined']
 
 class CreateTeacherForm(forms.ModelForm):
     class Meta:

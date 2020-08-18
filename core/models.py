@@ -22,10 +22,24 @@ class Profile(models.Model):
     class Meta:
         unique_together = ['first_name', 'last_name']
     
+
+CLASS_CHOICES = (
+    (1, 'Class 1'),
+    (2, 'Class 2'),
+    (3, 'Class 3'),
+    (4, 'Class 4'),
+    (5, 'Class 5'),
+    (6, 'Class 6'),
+    (7, 'Class 7'),
+    (8, 'Class 8'),
+    (9, 'Class 9'),
+    (10, 'Class 10'),
+)
+
 class Student(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
-    class_joined = models.IntegerField(blank=True, null=True)
-    current_class = models.IntegerField(blank=True, null=True)
+    class_joined = models.IntegerField(blank=True, null=True, choices=CLASS_CHOICES)
+    current_class = models.IntegerField(blank=True, null=True, choices=CLASS_CHOICES)
     class_passed = models.BooleanField(default=False)
     current_teachers = models.ManyToManyField(to='Teacher')
 
@@ -40,6 +54,7 @@ class Teacher(models.Model):
         ('E', 'English')
     ]
     subject = models.CharField(max_length=1, choices=TEACHER_SUBJECTS)
+    classes = models.ManyToManyField(to='Class')
 
     def __str__(self):
         return f'{self.profile.first_name} {self.profile.last_name}'
@@ -73,3 +88,13 @@ class Marksheet(models.Model):
     
     def get_absolute_url(self):
         return reverse('core:teacher-portal')
+
+    
+class Class(models.Model):
+    grade = models.IntegerField(choices=CLASS_CHOICES)
+
+    def __str__(self):
+        return f"Grade {self.grade}"
+
+    class Meta:
+        verbose_name_plural = 'classes'

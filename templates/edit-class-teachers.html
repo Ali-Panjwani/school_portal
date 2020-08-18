@@ -1,0 +1,184 @@
+{% extends 'adminbase.html' %}
+
+{% block active5 %}active
+{% endblock active5 %}
+
+{% block content %}
+<!--Main layout-->
+<main class="pt-5 mx-lg-5">
+    <div class="container-fluid mt-5">
+
+        <!-- Heading -->
+        <div class="card mb-4 wow fadeIn">
+
+            <!--Card content-->
+            <div class="card-body d-sm-flex justify-content-between">
+
+                <h4 class="mb-2 mb-sm-0 pt-1">
+                    <span>Edit Teachers for Class {{ grade }}</span>
+                </h4>
+                
+            </div>
+
+            <div class="card-body">
+                <!-- Material inline form -->
+                <form method="GET" class="form-inline" id="search-form">
+                    <!-- Material input -->
+                    <div class="md-form">
+                        <input name="first" type="text" class="form-control mb-2 mr-sm-2" id="first" placeholder="First Name">
+                        <label class="sr-only" for="inlineFormInputName2MD">First Name</label>
+                    </div>
+                    <!-- Material input -->
+                    <label class="sr-only" for="">Last Name</label>
+                    <div class="md-form input-group">
+                        <input name='last' type="text" class="form-control mb-2 mr-sm-3" id="last"
+                            placeholder="Last Name">
+                    </div>
+                    <!-- Material input -->
+                    <label class="sr-only" for="">Subject</label>
+                    <div class="md-form input-group">
+                        <input name='subject' type="text" class="form-control mb-2 mr-sm-3" id="subject"
+                            placeholder="Subject">
+                    </div>
+                
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+                <!-- Material inline form -->
+            </div>
+
+        </div>
+        <!-- Heading -->
+
+        {% if messages %}
+          {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+          {% endfor %}
+        {% endif %}
+
+        <div class="row">
+            <div class="col">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <!-- Table  -->
+                    <table class="table table-hover" id="teacher-table">
+                        <!-- Table head -->
+                        <thead class="info-color">
+                        <tr>
+                            <th class="pl-4">Add/Remove</th>
+                            <th>Name</th>
+                            <th>Subject</th>
+                            <th>Details</th>
+                        </tr>
+                        </thead>
+                        <!-- Table head -->
+                    
+                        <!-- Table body -->
+                        <tbody>
+                        {% for teacher in teachers %}
+                            {% if teacher in class_teachers %}
+                                <tr>
+                                    <th scope="row">
+                                        <!-- Default unchecked -->
+                                        <div class="custom-control custom-checkbox">
+                                            <input name='{{ teacher.pk }}' type="checkbox" class="custom-control-input" id="teacher-{{ teacher.pk }}" checked>
+                                            <label class="custom-control-label" for="teacher-{{ teacher.pk }}">Other: {{ forloop.counter }}</label>
+                                        </div>
+                                    </th>
+                                    <td>
+                                        <img width="40px" src="{{ teacher.profile.image.url }}" class="rounded-circle z-depth-0 mr-3" alt="avatar image">
+                                        <b>{{ teacher.profile.first_name }} {{ teacher.profile.last_name }}</b>
+                                    </td>
+                                    <td>{{ teacher.get_subject_display }}</td>
+                                    <td><a href="{% url 'core:teacher-detail-admin' teacher.pk %}" class="btn btn-primary btn-sm">View Details</a></td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        {% for teacher in teachers %}
+                            {% if teacher not in class_teachers %}
+                                <tr>
+                                    <th scope="row">
+                                        <!-- Default unchecked -->
+                                        <div class="custom-control custom-checkbox">
+                                            <input name='{{ teacher.pk }}' type="checkbox" class="custom-control-input" id="teacher-{{ teacher.pk }}">
+                                            <label class="custom-control-label" for="teacher-{{ teacher.pk }}">Other: {{ forloop.counter }}</label>
+                                        </div>
+                                    </th>
+                                    <td>
+                                        <img width="40px" src="{{ teacher.profile.image.url }}" class="rounded-circle z-depth-0 mr-3" alt="avatar image">
+                                        <b>{{ teacher.profile.first_name }} {{ teacher.profile.last_name }}</b>
+                                    </td>
+                                    <td>{{ teacher.get_subject_display }}</td>
+                                    <td><a href="{% url 'core:teacher-detail-admin' teacher.pk %}" class="btn btn-primary btn-sm">View Details</a></td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        </tbody>
+                        <!-- Table body -->
+                    </table>
+                    <!-- Table  -->
+                    <input class="btn btn-primary" type="submit" value="Update">
+                </form>
+            </div>
+        </div>
+
+    </div>
+</main>
+<!--Main layout-->
+
+{% endblock content %}
+
+
+{% block extra_body %}
+<script>
+// Basic example
+$(document).ready(function () {
+
+  
+  $('#dtBasicExample').DataTable({
+    "pagingType": "full_numbers" // "simple" option for 'Previous' and 'Next' buttons only
+  });
+  $('.dataTables_length').addClass('bs-select');
+
+  
+  $('#search-form').submit(function(e){
+      e.preventDefault();
+
+    //   function x(){
+        const first = $('#first').val();
+        const last = $('#last').val();
+        const subject = $('#subject').val();
+
+        const url = $('#search-form').attr('action')
+
+        $.ajax({
+          type: 'GET',
+          url: 'http://127.0.0.1:8000/admin-portal/classes/1/edit/',
+          data: {
+            // 'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+            'first': first,
+            'last': last,
+            'subject': subject,
+          },
+          success: function(html) {
+            // console.log(html)
+            $('#teacher-table', html).replaceAll('#teacher-table')
+          },
+          error: function (error) {
+            console.log('error', error)
+          }
+        })
+
+    //   }
+
+    //   setInterval(x, 1000)
+      
+
+    })
+});
+</script>
+{% endblock extra_body %}

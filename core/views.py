@@ -364,12 +364,14 @@ def edit_class_teachers(request, grade):
         else:
             for t in teachers:
                 check = request.POST.get(str(t.pk))
+                print(check)
                 if check == 'on':
                     t.classes.add(class_grade)
                     t.save()
-                else:
+                elif check == 'off':
                     if t in class_teachers:
                         t.classes.remove(class_grade)
+                        t.save()
             messages.success(request, f'Teachers for class {grade} edited successfully')
             return redirect('core:class-detail', grade=grade)
     else:

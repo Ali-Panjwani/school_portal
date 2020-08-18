@@ -157,7 +157,7 @@ $(document).ready(function () {
 
         $.ajax({
           type: 'GET',
-          url: 'http://127.0.0.1:8000/admin-portal/classes/1/edit/',
+          url: 'http://127.0.0.1:8000/admin-portal/classes/{{ grade }}/edit/',
           data: {
             // 'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
             'first': first,

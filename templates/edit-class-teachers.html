@@ -85,6 +85,7 @@
                                     <th scope="row">
                                         <!-- Default unchecked -->
                                         <div class="custom-control custom-checkbox">
+                                            <input type='hidden' value='off' name='{{ teacher.pk }}'>
                                             <input name='{{ teacher.pk }}' type="checkbox" class="custom-control-input" id="teacher-{{ teacher.pk }}" checked>
                                             <label class="custom-control-label" for="teacher-{{ teacher.pk }}">Other: {{ forloop.counter }}</label>
                                         </div>
@@ -104,6 +105,7 @@
                                     <th scope="row">
                                         <!-- Default unchecked -->
                                         <div class="custom-control custom-checkbox">
+                                            <input type='hidden' value='off' name='{{ teacher.pk }}'>
                                             <input name='{{ teacher.pk }}' type="checkbox" class="custom-control-input" id="teacher-{{ teacher.pk }}">
                                             <label class="custom-control-label" for="teacher-{{ teacher.pk }}">Other: {{ forloop.counter }}</label>
                                         </div>

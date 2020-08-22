@@ -402,7 +402,7 @@ def class_detail_view(request, grade):
 def is_query_valid(query):
     return query != '' and query is not None
 
-@login_required
+
 def edit_class_teachers(request, grade):
     if request.user.profile.status == 'A':
         class_grade = Class.objects.get(grade=grade)
@@ -444,7 +444,6 @@ def edit_class_teachers(request, grade):
             return redirect('core:class-detail', grade=grade)
     else:
         raise PermissionDenied
-
 
 def calculate_final_grades():
     for student in Student.objects.all():
@@ -495,7 +494,7 @@ def calc_overall(marksheets):
         final_grade = 'F'
     return mid_term_marks, final_term_marks, percentage, final_grade
 
-@login_required
+
 def finish_session(request):
     if request.user.profile.status == 'A':
         unmarked_students = []

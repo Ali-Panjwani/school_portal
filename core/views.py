@@ -25,6 +25,8 @@ def home(request):
         return redirect('core:teacher-portal')
     elif request.user.profile.status == 'A':
         return redirect('core:admin-portal')
+    else:
+        raise Http404
 
 @login_required
 def student_portal(request):
@@ -35,9 +37,6 @@ def student_portal(request):
         'class_list': range(class_joined, current_class+1)
     }
     return render(request, 'student-portal.html', context)
-
-
-
 
 @login_required
 def student_marksheet(request, username, grade):
@@ -146,24 +145,33 @@ def profile(request):
         return render(request, 'profile.html')
     
 
-
 @login_required
 def student_info(request, username):
     if request.user.profile.status == 'T':
         std_user = User.objects.get(username=username)
         std = Student.objects.get(profile=std_user.profile)
         teacher = Teacher.objects.get(profile=request.user.profile)
-        marksheets = Marksheet.objects.filter(pupil=std, teacher=teacher)
+        marksheets = Marksheet.objects.filter(pupil=std, teacher=teacher, student_grade=std.current_class)
         context = {
             'student': std,
             'marksheets': marksheets
         }
         return render(request, 'student_info.html', context)
 
-class MarksheetUpdateView(UpdateView):
+class MarksheetUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Marksheet
     fields = ['mid_term_marks', 'final_term_marks', 'final_grade']
     template_name = 'update_marksheet.html'
+
+    def test_func(self):
+        marksheet = self.get_object()
+        if self.request.user.profile.status == 'T':
+            if marksheet.teacher == self.request.user.profile.teacher and marksheet.student_grade == marksheet.pupil.current_class:
+                return True
+            else:
+                return False
+        return False
+        
 
 def admin_portal(request):
     return render(request, 'admin-portal.html')
@@ -405,7 +413,7 @@ def calculate_final_grades():
             percentage = percentage, 
             final_grade = final_grade
         )
-        student.final_grades_calculated = True
+        student.final_result_calculated = True
         student.save()
         # else:
         #     FinalGrades.objects.create(
@@ -468,19 +476,19 @@ def finish_session(request):
                     messages.success(request, 'Final Grades Successfully Calculated For All Students')
                     return redirect('core:finish-session')
             elif final == 'promote':
-                students = Student.objects.filter(final_result_calculated=True)
+                students = Student.objects.filter(final_result_calculated=False)
                 if students:
                     messages.warning(request, "Students' final results have not been calculated")
                     return redirect('core:finish-session')
                 else:
-                    promote_students(request)
+                    promote_students()
                     messages.success(request, 'All Students Promoted')
                     return redirect('core:finish-session')
     else:
         raise PermissionDenied
 
-def promote_students(request):
-    for students in Student.objects.all():
+def promote_students():
+    for student in Student.objects.all():
         final_result = FinalGrades.objects.filter(student=student, grade=student.current_class)
         if final_result[0].percentage >= 50:
             if student.current_class == 10:
@@ -492,6 +500,7 @@ def promote_students(request):
 
                 std_class = Class.objects.get(grade=student.current_class)
                 std_teachers = std_class.teacher_set.all()
+                student.current_teachers.remove()
                 student.current_teachers.set(std_teachers)
                 student.save()
 
@@ -503,6 +512,8 @@ def promote_students(request):
                         subject=teacher.subject,
                     )
                     m.save()
+                student.final_result_calculated = False
+                student.save()
         else:
             for teacher in student.current_teachers.all():
                 m = Marksheet(
@@ -512,3 +523,5 @@ def promote_students(request):
                     subject=teacher.subject,
                 )
                 m.save()
+            student.final_result_calculated = False
+            student.save()

@@ -1,0 +1,118 @@
+{% extends 'adminbase.html' %}
+
+{% block active6 %}active
+{% endblock active6 %}
+
+{% block content %}
+<!--Main layout-->
+<main class="pt-5 mx-lg-5">
+    <div class="container-fluid mt-5">
+        
+
+        <!-- Heading -->
+        <div class="card mb-4 wow fadeIn">
+
+            <!--Card content-->
+            <div class="card-body d-sm-flex justify-content-between">
+
+                <h4 class="mb-2 mb-sm-0 pt-1">
+                    <span>Session End Settings</span>
+                </h4>
+
+                <!-- <form class="d-flex justify-content-center">
+                    Default input
+                    <input type="search" placeholder="Type your query" aria-label="Search" class="form-control">
+                    <button class="btn btn-primary btn-sm my-0 p" type="submit">
+                    <i class="fas fa-search"></i>
+                    </button>
+
+                </form> -->
+
+            </div>
+
+        </div>
+        <!-- Heading -->
+
+        {% if messages %}
+          {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+          {% endfor %}
+        {% endif %}
+
+
+            <!--Grid row-->
+    <div class="row">
+
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+
+            <form action="" method="POST">
+                {% csrf_token %}
+                <input type="hidden" value="final-grades" name='final'>
+                <button type="submit" class="btn btn-lg blue-gradient-rgba waves-effect text-white">
+                    Calculate Final Grades
+                    <i class="fas fa-poll fa-2x ml-2"></i>
+                </button>
+            </form>
+
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+
+            <form action="" method="POST">
+                {% csrf_token %}
+                <input type="hidden" value="promote" name='final'>
+                <button type="submit" class="btn btn-lg peach-gradient-rgba waves-effect text-white">
+                    Promote Students
+                    <i class="fas fa-poll fa-2x ml-2"></i>
+                </button>
+            </form>
+
+        </div>
+        <!--Grid column-->
+
+
+    </div>
+    <!--Grid row-->
+        {% if students %}
+        <div class="row mb-5">
+            
+            <div class="col">
+                <h2 class="mt-3 ml-2">Unmarked Students</h3>
+                    <table class="table table-hover">
+                        <thead class="info-color">
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Current Class</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        {% for student in students %}
+                            <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>
+                                    <img width="40px" src="{{ student.profile.image.url }}" class="rounded-circle z-depth-0 mr-3" alt="avatar image">
+                                    <b>{{ student.profile.first_name }} {{ student.profile.last_name }}</b>
+                                </td>
+                                <td>{{ student.current_class }}</td>
+                                <td><a href="{% url 'core:student-detail-admin' student.profile.user.username %}" class="btn btn-primary btn-sm">View Details</a></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+            </div>
+        </div>
+        {% endif %}
+</main>
+<!--Main layout-->
+
+{% endblock content %}

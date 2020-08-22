@@ -20,7 +20,7 @@ class CreateUserForm(UserCreationForm):
 class CreateProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['first_name', 'last_name', 'image', 'birthdate', 'date_joined']
+        fields = ['first_name', 'last_name', 'image', 'birthdate']
 
 class CreateStudentForm(forms.ModelForm):
     class Meta:

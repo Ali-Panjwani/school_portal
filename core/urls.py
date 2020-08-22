@@ -18,7 +18,8 @@ from .views import (
     create_student,
     classes_view,
     class_detail_view,
-    edit_class_teachers
+    edit_class_teachers,
+    finish_session
 )
 
 app_name = 'core'
@@ -43,4 +44,5 @@ urlpatterns = [
     path('admin-portal/classes/', classes_view, name='classes'),
     path('admin-portal/classes/<int:grade>/', class_detail_view, name='class-detail'),
     path('admin-portal/classes/<int:grade>/edit/', edit_class_teachers, name='edit-class-teachers'),
+    path('admin-portal/finish-session/', finish_session, name='finish-session')
 ]

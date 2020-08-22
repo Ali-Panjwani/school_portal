@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
-from .models import Marksheet, Student, Teacher, Profile, Class
+from .models import Marksheet, Student, Teacher, Profile, Class, FinalGrades
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
@@ -11,6 +11,7 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from .forms import CreateUserForm, CreateProfileForm, CreateTeacherForm, CreateStudentForm, StatusForm
 from django.db.models import Q
 
+from datetime import datetime
 import io
 from django.http import FileResponse
 from reportlab.pdfgen import canvas
@@ -36,28 +37,7 @@ def student_portal(request):
     return render(request, 'student-portal.html', context)
 
 
-def calc_overall(marksheets):
-    mid_term_marks = 0
-    final_term_marks = 0
-    for marksheet in marksheets:
-        mid_term_marks += marksheet.mid_term_marks
-        final_term_marks += marksheet.final_term_marks
-    mid_term_marks = mid_term_marks / len(marksheets)
-    final_term_marks = final_term_marks / len(marksheets)
-    percentage = (mid_term_marks + final_term_marks) / 2
-    if percentage > 90:
-        final_grade = 'A'
-    elif percentage > 80:
-        final_grade = 'B'
-    elif percentage > 80:
-        final_grade = 'C'
-    elif percentage > 80:
-        final_grade = 'D'
-    elif percentage > 80:
-        final_grade = 'E'
-    else:
-        final_grade = 'F'
-    return mid_term_marks, final_term_marks, percentage, final_grade
+
 
 @login_required
 def student_marksheet(request, username, grade):
@@ -65,16 +45,24 @@ def student_marksheet(request, username, grade):
     std = Student.objects.get(profile=std_user.profile)
     marksheets = Marksheet.objects.filter(pupil=std, student_grade=grade)
     if marksheets:
-        mid_term_marks, final_term_marks, percentage, final_grade = calc_overall(marksheets)
+        # mid_term_marks, final_term_marks, percentage, final_grade = calc_overall(marksheets)
         context = {
             'marksheets': marksheets,
             'class': grade,
-            'mid_term_marks': mid_term_marks, 
-            'final_term_marks': final_term_marks,
-            'percentage': percentage,
-            'final_grade': final_grade,
+            # 'mid_term_marks': mid_term_marks, 
+            # 'final_term_marks': final_term_marks,
+            # 'percentage': percentage,
+            # 'final_grade': final_grade,
             'student': std
         }
+        final_grade = FinalGrades.objects.filter(student=std, grade=grade)
+        if final_grade:
+            final_grade = final_grade[0]
+            context['mid_term_marks'] = final_grade.mid_term_marks
+            context['final_term_marks'] = final_grade.final_term_marks
+            context['percentage'] = final_grade.percentage
+            context['final_grade'] = final_grade.final_grade
+            print(context)
         return render(request, 'marksheets.html', context)
     else:
         messages.warning(request, 'There Was No Marksheet Found For This Class')
@@ -88,7 +76,8 @@ def marksheet_pdf(request, username, grade):
     std_user = User.objects.get(username=username)
     std = Student.objects.get(profile=std_user.profile)
     marksheets = Marksheet.objects.filter(pupil=std, student_grade=grade)
-    mid_term_marks, final_term_marks, percentage, final_grade = calc_overall(marksheets)
+    final_grade = get_object_or_404(FinalGrades, student=std, grade=grade)
+    mid_term_marks, final_term_marks, percentage, final_grade = final_grade.mid_term_marks, final_grade.final_term_marks, final_grade.percentage, final_grade.final_grade
 
     buffer = io.BytesIO()
 
@@ -264,6 +253,13 @@ def create_profile(request, username):
         p_form = CreateProfileForm(request.POST, instance=user.profile)
         if p_form.is_valid():
             p_form.save()
+            if user.profile.birthdate is not None:
+                birth_year = user.profile.birthdate.year
+                current_year = datetime.date(datetime.now()).year
+                user.profile.age = current_year - birth_year
+                user.profile.save()
+            else:
+                return redirect('core:create-profile', username=username)
             if user.profile.status == 'A':
                 user.is_staff = True
                 user.save()
@@ -292,6 +288,24 @@ def create_student(request, username):
 
         if form.is_valid():
             form.save()
+            if user.profile.status == 'S':
+                student = user.profile.student
+                student.current_class = student.class_joined
+                student.save()
+                std_class = Class.objects.get(grade=student.current_class)
+                std_teachers = std_class.teacher_set.all()
+                student.current_teachers.set(std_teachers)
+                student.save()
+
+                for teacher in student.current_teachers.all():
+                    m = Marksheet(
+                        pupil=student,
+                        student_grade=student.current_class,
+                        teacher=teacher,
+                        subject=teacher.subject,
+                    )
+                    m.save()
+
             messages.success(request, 'User Created Successfully')
             return redirect('core:home', permanent=True)
 
@@ -376,3 +390,125 @@ def edit_class_teachers(request, grade):
             return redirect('core:class-detail', grade=grade)
     else:
         raise PermissionDenied
+
+def calculate_final_grades():
+    for student in Student.objects.all():
+        marksheets = Marksheet.objects.filter(pupil=student, student_grade=student.current_class, current=True)
+        mid_term_marks, final_term_marks, percentage, final_grade = calc_overall(marksheets)
+        # final_result = FinalGrades.objects.filter(student=student, grade=student.current_class)
+        # if final_result:
+        FinalGrades.objects.update_or_create(
+            student = student,
+            grade = student.current_class,
+            mid_term_marks = mid_term_marks,
+            final_term_marks = final_term_marks, 
+            percentage = percentage, 
+            final_grade = final_grade
+        )
+        student.final_grades_calculated = True
+        student.save()
+        # else:
+        #     FinalGrades.objects.create(
+        #         student = student,
+        #         grade = student.current_class,
+        #         mid_term_marks = mid_term_marks,
+        #         final_term_marks = final_term_marks, 
+        #         percentage = percentage, 
+        #         final_grade = final_grade
+        #     )
+
+def calc_overall(marksheets):
+    mid_term_marks = 0
+    final_term_marks = 0
+    for marksheet in marksheets:
+        mid_term_marks += marksheet.mid_term_marks
+        final_term_marks += marksheet.final_term_marks
+    mid_term_marks = mid_term_marks / len(marksheets)
+    final_term_marks = final_term_marks / len(marksheets)
+    percentage = (mid_term_marks + final_term_marks) / 2
+    if percentage > 90:
+        final_grade = 'A'
+    elif percentage > 80:
+        final_grade = 'B'
+    elif percentage > 80:
+        final_grade = 'C'
+    elif percentage > 80:
+        final_grade = 'D'
+    elif percentage > 80:
+        final_grade = 'E'
+    else:
+        final_grade = 'F'
+    return mid_term_marks, final_term_marks, percentage, final_grade
+
+
+def finish_session(request):
+    if request.user.profile.status == 'A':
+        unmarked_students = []
+        marksheets = Marksheet.objects.filter(Q(mid_term_marks=None) | Q(final_term_marks=None) | Q(final_grade=None))
+        for marksheet in marksheets:
+            if marksheet.pupil not in unmarked_students:
+                unmarked_students.append(marksheet.pupil)
+        if request.method == 'GET':
+            context = {
+                'students': unmarked_students
+            } 
+            return render(request, 'finish-session.html', context)
+        else:
+            final = request.POST.get('final')
+            if final == 'final-grades':
+                if unmarked_students:
+                    context = {
+                        'students': unmarked_students
+                    }
+                    messages.warning(request, 'There are still unmarked students remaining')
+                    # TODO:  Send Message to teachers
+                    return render(request, 'finish-session.html', context)
+                else:
+                    calculate_final_grades()
+                    messages.success(request, 'Final Grades Successfully Calculated For All Students')
+                    return redirect('core:finish-session')
+            elif final == 'promote':
+                students = Student.objects.filter(final_result_calculated=True)
+                if students:
+                    messages.warning(request, "Students' final results have not been calculated")
+                    return redirect('core:finish-session')
+                else:
+                    promote_students(request)
+                    messages.success(request, 'All Students Promoted')
+                    return redirect('core:finish-session')
+    else:
+        raise PermissionDenied
+
+def promote_students(request):
+    for students in Student.objects.all():
+        final_result = FinalGrades.objects.filter(student=student, grade=student.current_class)
+        if final_result[0].percentage >= 50:
+            if student.current_class == 10:
+                student.class_finished = True
+                student.save()
+            else:
+                student.current_class += 1
+                student.save()
+
+                std_class = Class.objects.get(grade=student.current_class)
+                std_teachers = std_class.teacher_set.all()
+                student.current_teachers.set(std_teachers)
+                student.save()
+
+                for teacher in student.current_teachers.all():
+                    m = Marksheet(
+                        pupil=student,
+                        student_grade=student.current_class,
+                        teacher=teacher,
+                        subject=teacher.subject,
+                    )
+                    m.save()
+        else:
+            for teacher in student.current_teachers.all():
+                m = Marksheet(
+                    pupil=student,
+                    student_grade=student.current_class,
+                    teacher=teacher,
+                    subject=teacher.subject,
+                )
+                m.save()
